@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Caja Móvil</title>
+    <!-- Importar tipografía Outfit desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --bg: #f8f9fa;
+            --text: #202124;
+            --text-secondary: #5f6368;
+            --card-bg: #ffffff;
+            --highlight-bg: #e8f0fe;
+            --decimal-text: #000;
+            --decimal-bg: #e8f0fe;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden; 
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 800;
+            font-size: 1.8em;
+            color: var(--primary);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-left: 5px;
+        }
+
+        input {
+            font-family: 'Outfit', sans-serif;
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #fff;
+        }
+
+        input.tasa-input {
+            background-color: var(--highlight-bg);
+            color: var(--primary);
+            font-weight: 600;
+            border-color: #d2e3fc;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .row .input-group {
+            flex: 1;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #e0e0e0;
+            margin: 10px 0;
+        }
+
+        .results-container {
+            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 5px;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 1em;
+        }
+
+        .result-value {
+            font-weight: 600;
+            font-size: 1.4em;
+            color: var(--text);
+        }
+
+        .decimal-box {
+            background-color: var(--decimal-bg);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .decimal-label {
+            color: var(--decimal-text);
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .decimal-value {
+            font-size: 1.8em;
+            font-weight: 800;
+            color: #000;
+        }
+
+        #labelDinamico {
+            font-weight: 800;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>Calculadora Móvil</h1>
+    </div>
+
+    <div class="input-group">
+        <label for="tasa">TASA DEL DÍA (Bs/$)</label>
+        <input type="number" id="tasa" class="tasa-input" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+    </div>
+
+    <div class="row">
+        <div class="input-group">
+            <label for="precioUSD">Consumo en $</label>
+            <input type="number" id="precioUSD" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+        </div>
+        <div class="input-group">
+            <label for="precioBS">Consumo en Bs</label>
+            <input type="number" id="precioBS" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="input-group">
+        <label for="pagoCliente">¿CON CUÁNTO PAGA? ($)</label>
+        <input type="number" id="pagoCliente" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="Ej: 10, 20, 50">
+    </div>
+
+    <div class="results-container">
+        <div class="result-row">
+            <span class="result-label">Vuelto Total USD</span>
+            <span id="vueltoUSD" class="result-value">0.00 $</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Vuelto Total BS</span>
+            <span id="vueltoBS" class="result-value">0,00 Bs</span>
+        </div>
+    </div>
+
+    <!-- Decimales Separados Modificado -->
+    <div class="decimal-box">
+        <span class="decimal-label">Vuelto de <span id="labelDinamico">0.00</span>$ en Bolívares:</span>
+        <div id="soloDecimalesBS" class="decimal-value">0,00 Bs</div>
+    </div>
+</div>
+
+<script>
+    const inputTasa = document.getElementById('tasa');
+    const inputPrecioUSD = document.getElementById('precioUSD');
+    const inputPrecioBS = document.getElementById('precioBS');
+    const inputPago = document.getElementById('pagoCliente');
+    
+    const outputVueltoUSD = document.getElementById('vueltoUSD');
+    const outputVueltoBS = document.getElementById('vueltoBS');
+    const outputLabelDinamico = document.getElementById('labelDinamico');
+    const outputSoloDecimalesBS = document.getElementById('soloDecimalesBS');
+
+    window.onload = function() {
+        const tasaGuardada = localStorage.getItem('tasaDolar');
+        if (tasaGuardada) {
+            inputTasa.value = tasaGuardada;
+        }
+    };
+
+    inputTasa.addEventListener('input', function() {
+        localStorage.setItem('tasaDolar', this.value);
+        calcularTodo();
+    });
+
+    inputPrecioUSD.addEventListener('input', function() {
+        const tasa = parseFloat(inputTasa.value) || 0;
+        const usd = parseFloat(this.value);
+        if (usd && tasa > 0) {
+            inputPrecioBS.value = (usd * tasa).toFixed(2);
+        } else if (this.value === "") {
+            inputPrecioBS.value = "";
+        }
+        calcularTodo();
+    });
+
+    inputPrecioBS.addEventListener('input', function() {
+        const tasa = parseFloat(inputTasa.value) || 0;
+        const bs = parseFloat(this.value);
+        if (bs && tasa > 0) {
+            inputPrecioUSD.value = (bs / tasa).toFixed(2);
+        } else if (this.value === "") {
+            inputPrecioUSD.value = "";
+        }
+        calcularTodo();
+    });
+
+    inputPago.addEventListener('input', calcularTodo);
+
+    function calcularTodo() {
+        const tasa = parseFloat(inputTasa.value) || 0;
+        const precioUSD = parseFloat(inputPrecioUSD.value) || 0;
+        const pagoUSD = parseFloat(inputPago.value) || 0;
+
+        if (tasa <= 0 || inputPrecioUSD.value === "" || inputPago.value === "") {
+            actualizarPantalla(0, 0, 0, 0);
+            return;
+        }
+
+        if (pagoUSD >= precioUSD) {
+            const vueltoTotalUSD = pagoUSD - precioUSD;
+            const vueltoTotalBS = vueltoTotalUSD * tasa;
+            
+            // Extraer solo la parte decimal del vuelto
+            const decimalesUSD = vueltoTotalUSD - Math.floor(vueltoTotalUSD);
+            // Redondear para evitar errores de precisión de JS
+            const decimalesRedondeados = Math.round(decimalesUSD * 100) / 100;
+            const decimalesEnBS = decimalesRedondeados * tasa;
+
+            actualizarPantalla(vueltoTotalUSD, vueltoTotalBS, decimalesRedondeados, decimalesEnBS);
+        } else {
+            outputVueltoUSD.innerText = "Falta dinero";
+            outputVueltoUSD.style.color = "red";
+            outputVueltoBS.innerText = "---";
+            outputLabelDinamico.innerText = "0.00";
+            outputSoloDecimalesBS.innerText = "0,00 Bs";
+        }
+    }
+
+    function actualizarPantalla(usd, bs, decUSD, decBs) {
+        outputVueltoUSD.style.color = "var(--text)";
+        outputVueltoUSD.innerText = usd.toFixed(2) + " $";
+
+        const formatoBS = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+        
+        outputVueltoBS.innerText = bs.toLocaleString('es-VE', formatoBS) + " Bs";
+        
+        // Mostrar el decimal (ej: 0.23) en el texto de arriba
+        outputLabelDinamico.innerText = decUSD.toFixed(2);
+        
+        // Mostrar el resultado en Bs abajo
+        outputSoloDecimalesBS.innerText = decBs.toLocaleString('es-VE', formatoBS) + " Bs";
+    }
+</script>
+
+</body>
+</html>
