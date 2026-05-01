@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caja Móvil</title>
-    <!-- Importar tipografía Outfit desde Google Fonts -->
+    
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1011/1011532.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -27,6 +33,10 @@
             display: flex;
             justify-content: center;
             overflow-x: hidden; 
+            /* Evitar scroll elástico en iOS */
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
 
         .app-container {
@@ -35,6 +45,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            overflow-y: auto;
         }
 
         .header {
@@ -198,7 +209,6 @@
         </div>
     </div>
 
-    <!-- Decimales Separados Modificado -->
     <div class="decimal-box">
         <span class="decimal-label">Vuelto de <span id="labelDinamico">0.00</span>$ en Bolívares:</span>
         <div id="soloDecimalesBS" class="decimal-value">0,00 Bs</div>
@@ -206,6 +216,15 @@
 </div>
 
 <script>
+    // Registro del Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registrado'))
+                .catch(err => console.log('Error al registrar SW', err));
+        });
+    }
+
     const inputTasa = document.getElementById('tasa');
     const inputPrecioUSD = document.getElementById('precioUSD');
     const inputPrecioBS = document.getElementById('precioBS');
@@ -266,9 +285,7 @@
             const vueltoTotalUSD = pagoUSD - precioUSD;
             const vueltoTotalBS = vueltoTotalUSD * tasa;
             
-            // Extraer solo la parte decimal del vuelto
             const decimalesUSD = vueltoTotalUSD - Math.floor(vueltoTotalUSD);
-            // Redondear para evitar errores de precisión de JS
             const decimalesRedondeados = Math.round(decimalesUSD * 100) / 100;
             const decimalesEnBS = decimalesRedondeados * tasa;
 
@@ -289,11 +306,7 @@
         const formatoBS = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
         
         outputVueltoBS.innerText = bs.toLocaleString('es-VE', formatoBS) + " Bs";
-        
-        // Mostrar el decimal (ej: 0.23) en el texto de arriba
         outputLabelDinamico.innerText = decUSD.toFixed(2);
-        
-        // Mostrar el resultado en Bs abajo
         outputSoloDecimalesBS.innerText = decBs.toLocaleString('es-VE', formatoBS) + " Bs";
     }
 </script>
