@@ -24,6 +24,11 @@
             --decimal-bg: #e8f0fe;
         }
 
+        /* Aplicar box-sizing a todo el documento para evitar desbordamientos por padding */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
@@ -32,11 +37,11 @@
             padding: 15px;
             display: flex;
             justify-content: center;
-            overflow-x: hidden; 
-            /* Evitar scroll elástico en iOS */
+            /* Evitar scroll elástico y lateral */
+            overflow: hidden; 
             position: fixed;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
         }
 
         .app-container {
@@ -45,7 +50,10 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            /* El scroll ahora ocurre solo aquí dentro */
             overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 30px;
         }
 
         .header {
@@ -80,7 +88,6 @@
             font-size: 18px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
-            box-sizing: border-box;
             transition: border-color 0.2s;
             -webkit-appearance: none;
         }
