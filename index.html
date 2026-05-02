@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Caja Móvil</title>
+    <title>Caja Móvil + Calc Pro</title>
     
     <meta name="theme-color" content="#1a73e8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1011/1011532.png">
-
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --primary: #1a73e8;
             --bg: #f8f9fa;
             --text: #202124;
             --text-secondary: #5f6368;
-            --card-bg: #ffffff;
-            --highlight-bg: #e8f0fe;
-            --decimal-text: #000;
             --decimal-bg: #e8f0fe;
         }
 
-        /* Aplicar box-sizing a todo el documento para evitar desbordamientos por padding */
-        * {
-            box-sizing: border-box;
+        /* Aplicación global de Outfit */
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
-            color: var(--text);
             margin: 0;
             padding: 15px;
             display: flex;
             justify-content: center;
-            /* Evitar scroll elástico y lateral */
             overflow: hidden; 
             position: fixed;
             width: 100vw;
@@ -50,159 +45,157 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            /* El scroll ahora ocurre solo aquí dentro */
             overflow-y: auto;
-            overflow-x: hidden;
             padding-bottom: 30px;
         }
 
-        .header {
-            text-align: center;
-            padding: 10px 0;
-        }
+        .header h1 { text-align: center; font-weight: 800; font-size: 1.8em; color: var(--primary); margin: 10px 0; }
 
-        .header h1 {
-            margin: 0;
-            font-weight: 800;
-            font-size: 1.8em;
-            color: var(--primary);
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        label {
-            font-weight: 600;
-            font-size: 0.9em;
-            color: var(--text-secondary);
-            margin-left: 5px;
-        }
-
+        .input-group { display: flex; flex-direction: column; gap: 5px; position: relative; }
+        label { font-weight: 600; font-size: 0.9em; color: var(--text-secondary); margin-left: 5px; }
+        
         input {
-            font-family: 'Outfit', sans-serif;
             width: 100%;
             padding: 16px;
             font-size: 18px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
-            transition: border-color 0.2s;
-            -webkit-appearance: none;
-        }
-
-        input:focus {
+            background: white;
             outline: none;
-            border-color: var(--primary);
-            background-color: #fff;
+        }
+        input.tasa-input { background-color: #e8f0fe; color: var(--primary); font-weight: 600; border-color: #d2e3fc; }
+
+        .row { display: flex; gap: 10px; }
+        .row .input-group { flex: 1; }
+
+        .btn-calc-trigger {
+            position: absolute;
+            right: 8px;
+            top: 32px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            z-index: 5;
+            cursor: pointer;
         }
 
-        input.tasa-input {
-            background-color: var(--highlight-bg);
-            color: var(--primary);
-            font-weight: 600;
-            border-color: #d2e3fc;
+        /* MODAL CALCULADORA */
+        #modalCalc {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: flex-end;
         }
 
-        .row {
-            display: flex;
-            gap: 10px;
-        }
-        .row .input-group {
-            flex: 1;
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid #e0e0e0;
-            margin: 10px 0;
-        }
-
-        .results-container {
-            margin-top: 5px;
+        .ios-calc {
+            width: 90%;
+            max-width: 350px;
+            height: 100%;
+            background: #000;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            justify-content: center;
+            gap: 15px;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .result-row {
+        #modalCalc.active .ios-calc { transform: translateX(0); }
+
+        .calc-display {
+            color: white;
+            font-size: 50px;
+            font-weight: 300;
+            text-align: right;
+            padding: 10px;
+            min-height: 90px;
+            white-space: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px 5px;
+            justify-content: flex-end;
         }
+        .calc-display::-webkit-scrollbar { display: none; }
 
-        .result-label {
-            color: var(--text-secondary);
-            font-weight: 400;
-            font-size: 1em;
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+        .calc-btn {
+            height: 68px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: brightness 0.2s;
         }
+        .calc-btn:active { filter: brightness(1.5); }
 
-        .result-value {
-            font-weight: 600;
-            font-size: 1.4em;
-            color: var(--text);
-        }
-
-        .decimal-box {
-            background-color: var(--decimal-bg);
-            padding: 20px;
+        .btn-num { background: #333; color: white; }
+        .btn-op { background: #ff9f0a; color: white; font-size: 28px; }
+        .btn-fn { background: #a5a5a5; color: black; }
+        
+        .btn-import {
+            grid-column: span 4;
+            background: var(--primary);
+            color: white;
             border-radius: 16px;
-            text-align: center;
+            height: 60px;
+            font-size: 18px;
+            font-weight: 700;
             margin-top: 10px;
-        }
-
-        .decimal-label {
-            color: var(--decimal-text);
-            font-weight: 600;
-            font-size: 0.85em;
+            border: none;
             text-transform: uppercase;
             letter-spacing: 1px;
-            display: block;
-            margin-bottom: 8px;
         }
 
-        .decimal-value {
-            font-size: 1.8em;
-            font-weight: 800;
-            color: #000;
-        }
-
-        #labelDinamico {
-            font-weight: 800;
-            text-decoration: underline;
-        }
+        /* RESULTADOS PRINCIPALES */
+        .results-container { margin-top: 10px; border-top: 1px solid #eee; padding-top: 15px; }
+        .result-row { display: flex; justify-content: space-between; padding: 10px 0; align-items: center; }
+        .result-label { color: var(--text-secondary); font-weight: 400; }
+        .result-value { font-weight: 700; font-size: 1.4em; color: var(--text); }
+        
+        .decimal-box { background: var(--decimal-bg); padding: 20px; border-radius: 16px; text-align: center; }
+        .decimal-value { font-size: 1.8em; font-weight: 800; color: #000; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="header">
-        <h1>Calculadora Móvil</h1>
-    </div>
+    <div class="header"><h1>Calculadora Móvil</h1></div>
 
     <div class="input-group">
-        <label for="tasa">TASA DEL DÍA (Bs/$)</label>
-        <input type="number" id="tasa" class="tasa-input" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+        <label>TASA DEL DÍA (Bs/$)</label>
+        <input type="number" id="tasa" class="tasa-input" inputmode="decimal" placeholder="0.00">
     </div>
 
     <div class="row">
         <div class="input-group">
-            <label for="precioUSD">Consumo en $</label>
-            <input type="number" id="precioUSD" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+            <label>Consumo en $</label>
+            <input type="number" id="precioUSD" inputmode="decimal" placeholder="0.00">
         </div>
         <div class="input-group">
-            <label for="precioBS">Consumo en Bs</label>
-            <input type="number" id="precioBS" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+            <label>Consumo en Bs</label>
+            <button class="btn-calc-trigger" onclick="openCalc()">
+                <i class="fas fa-calculator"></i>
+            </button>
+            <input type="number" id="precioBS" inputmode="decimal" placeholder="0.00">
         </div>
     </div>
 
-    <hr>
+    <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
 
     <div class="input-group">
-        <label for="pagoCliente">¿CON CUÁNTO PAGA? ($)</label>
-        <input type="number" id="pagoCliente" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="Ej: 10, 20, 50">
+        <label>¿CON CUÁNTO PAGA? ($)</label>
+        <input type="number" id="pagoCliente" inputmode="decimal" placeholder="Ej: 20">
     </div>
 
     <div class="results-container">
@@ -217,62 +210,131 @@
     </div>
 
     <div class="decimal-box">
-        <span class="decimal-label">Vuelto de <span id="labelDinamico">0.00</span>$ en Bolívares:</span>
+        <span style="font-size:0.85em; font-weight:600; color: #1a73e8; text-transform: uppercase;">
+            Vuelto de <b id="labelDinamico" style="text-decoration:underline;">0.00</b>$ en Bs:
+        </span>
         <div id="soloDecimalesBS" class="decimal-value">0,00 Bs</div>
     </div>
 </div>
 
-<script>
-    // Registro del Service Worker para PWA
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Service Worker registrado'))
-                .catch(err => console.log('Error al registrar SW', err));
-        });
-    }
+<!-- Modal Calculadora -->
+<div id="modalCalc" onclick="closeCalcOutside(event)">
+    <div class="ios-calc" onclick="event.stopPropagation()">
+        <div class="calc-display" id="display">0</div>
+        <div class="calc-grid">
+            <button class="calc-btn btn-fn" onclick="clearCalc()">AC</button>
+            <button class="calc-btn btn-fn" onclick="closeCalc()">✕</button>
+            <button class="calc-btn btn-fn" onclick="appendOp('/')">÷</button>
+            <button class="calc-btn btn-op" onclick="appendOp('*')">×</button>
+            
+            <button class="calc-btn btn-num" onclick="appendNum('7')">7</button>
+            <button class="calc-btn btn-num" onclick="appendNum('8')">8</button>
+            <button class="calc-btn btn-num" onclick="appendNum('9')">9</button>
+            <button class="calc-btn btn-op" onclick="appendOp('-')">−</button>
+            
+            <button class="calc-btn btn-num" onclick="appendNum('4')">4</button>
+            <button class="calc-btn btn-num" onclick="appendNum('5')">5</button>
+            <button class="calc-btn btn-num" onclick="appendNum('6')">6</button>
+            <button class="calc-btn btn-op" onclick="appendOp('+')">+</button>
+            
+            <button class="calc-btn btn-num" onclick="appendNum('1')">1</button>
+            <button class="calc-btn btn-num" onclick="appendNum('2')">2</button>
+            <button class="calc-btn btn-num" onclick="appendNum('3')">3</button>
+            <button class="calc-btn btn-op" onclick="calculateResult()">=</button>
+            
+            <button class="calc-btn btn-num" style="grid-column: span 2; border-radius: 40px;" onclick="appendNum('0')">0</button>
+            <button class="calc-btn btn-num" onclick="appendNum('.')">.</button>
+            <button class="calc-btn btn-num" onclick="deleteLast()"><i class="fas fa-backspace"></i></button>
 
+            <button class="btn-import" onclick="importValue()">Importar a Consumo Bs</button>
+        </div>
+    </div>
+</div>
+
+<script>
     const inputTasa = document.getElementById('tasa');
     const inputPrecioUSD = document.getElementById('precioUSD');
     const inputPrecioBS = document.getElementById('precioBS');
     const inputPago = document.getElementById('pagoCliente');
-    
-    const outputVueltoUSD = document.getElementById('vueltoUSD');
-    const outputVueltoBS = document.getElementById('vueltoBS');
-    const outputLabelDinamico = document.getElementById('labelDinamico');
-    const outputSoloDecimalesBS = document.getElementById('soloDecimalesBS');
+    const display = document.getElementById('display');
+    const modal = document.getElementById('modalCalc');
 
-    window.onload = function() {
-        const tasaGuardada = localStorage.getItem('tasaDolar');
-        if (tasaGuardada) {
-            inputTasa.value = tasaGuardada;
+    let currentExpression = '';
+
+    // LÓGICA CALCULADORA
+    function openCalc() {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+
+    function closeCalc() {
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    function closeCalcOutside(e) { if(e.target === modal) closeCalc(); }
+
+    function updateDisplay() {
+        display.innerText = currentExpression || '0';
+        display.scrollLeft = display.scrollWidth; // Desplazamiento automático a la izquierda
+    }
+
+    function appendNum(n) {
+        if (currentExpression === '0') currentExpression = '';
+        currentExpression += n;
+        updateDisplay();
+    }
+
+    function appendOp(op) {
+        if (currentExpression === '' || isNaN(currentExpression.slice(-1))) return;
+        currentExpression += op;
+        updateDisplay();
+    }
+
+    function deleteLast() {
+        currentExpression = currentExpression.slice(0, -1);
+        updateDisplay();
+    }
+
+    function clearCalc() {
+        currentExpression = '';
+        updateDisplay();
+    }
+
+    function calculateResult() {
+        try {
+            let res = eval(currentExpression);
+            currentExpression = String(parseFloat(res.toFixed(2)));
+            updateDisplay();
+        } catch {
+            display.innerText = 'Error';
+            setTimeout(clearCalc, 800);
         }
-    };
+    }
 
-    inputTasa.addEventListener('input', function() {
-        localStorage.setItem('tasaDolar', this.value);
+    function importValue() {
+        if (currentExpression !== '' && !isNaN(currentExpression)) {
+            inputPrecioBS.value = currentExpression;
+            inputPrecioBS.dispatchEvent(new Event('input'));
+            closeCalc();
+        }
+    }
+
+    // LÓGICA DE NEGOCIO
+    inputTasa.addEventListener('input', () => {
+        localStorage.setItem('tasaDolar', inputTasa.value);
         calcularTodo();
     });
 
     inputPrecioUSD.addEventListener('input', function() {
         const tasa = parseFloat(inputTasa.value) || 0;
-        const usd = parseFloat(this.value);
-        if (usd && tasa > 0) {
-            inputPrecioBS.value = (usd * tasa).toFixed(2);
-        } else if (this.value === "") {
-            inputPrecioBS.value = "";
-        }
+        if (this.value && tasa > 0) inputPrecioBS.value = (parseFloat(this.value) * tasa).toFixed(2);
         calcularTodo();
     });
 
     inputPrecioBS.addEventListener('input', function() {
         const tasa = parseFloat(inputTasa.value) || 0;
-        const bs = parseFloat(this.value);
-        if (bs && tasa > 0) {
-            inputPrecioUSD.value = (bs / tasa).toFixed(2);
-        } else if (this.value === "") {
-            inputPrecioUSD.value = "";
-        }
+        if (this.value && tasa > 0) inputPrecioUSD.value = (parseFloat(this.value) / tasa).toFixed(2);
         calcularTodo();
     });
 
@@ -283,39 +345,33 @@
         const precioUSD = parseFloat(inputPrecioUSD.value) || 0;
         const pagoUSD = parseFloat(inputPago.value) || 0;
 
-        if (tasa <= 0 || inputPrecioUSD.value === "" || inputPago.value === "") {
+        if (tasa <= 0 || !inputPrecioUSD.value || !inputPago.value) {
             actualizarPantalla(0, 0, 0, 0);
             return;
         }
 
         if (pagoUSD >= precioUSD) {
-            const vueltoTotalUSD = pagoUSD - precioUSD;
-            const vueltoTotalBS = vueltoTotalUSD * tasa;
-            
-            const decimalesUSD = vueltoTotalUSD - Math.floor(vueltoTotalUSD);
-            const decimalesRedondeados = Math.round(decimalesUSD * 100) / 100;
-            const decimalesEnBS = decimalesRedondeados * tasa;
-
-            actualizarPantalla(vueltoTotalUSD, vueltoTotalBS, decimalesRedondeados, decimalesEnBS);
+            const vUSD = pagoUSD - precioUSD;
+            const vBS = vUSD * tasa;
+            const decUSD = vUSD - Math.floor(vUSD);
+            const decBS = (Math.round(decUSD * 100) / 100) * tasa;
+            actualizarPantalla(vUSD, vBS, decUSD, decBS);
         } else {
-            outputVueltoUSD.innerText = "Falta dinero";
-            outputVueltoUSD.style.color = "red";
-            outputVueltoBS.innerText = "---";
-            outputLabelDinamico.innerText = "0.00";
-            outputSoloDecimalesBS.innerText = "0,00 Bs";
+            document.getElementById('vueltoUSD').innerText = "Falta dinero";
+            document.getElementById('vueltoBS').innerText = "---";
         }
     }
 
     function actualizarPantalla(usd, bs, decUSD, decBs) {
-        outputVueltoUSD.style.color = "var(--text)";
-        outputVueltoUSD.innerText = usd.toFixed(2) + " $";
-
-        const formatoBS = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-        
-        outputVueltoBS.innerText = bs.toLocaleString('es-VE', formatoBS) + " Bs";
-        outputLabelDinamico.innerText = decUSD.toFixed(2);
-        outputSoloDecimalesBS.innerText = decBs.toLocaleString('es-VE', formatoBS) + " Bs";
+        document.getElementById('vueltoUSD').innerText = usd.toFixed(2) + " $";
+        document.getElementById('vueltoBS').innerText = bs.toLocaleString('es-VE', {minimumFractionDigits:2}) + " Bs";
+        document.getElementById('labelDinamico').innerText = (Math.round(decUSD * 100) / 100).toFixed(2);
+        document.getElementById('soloDecimalesBS').innerText = decBs.toLocaleString('es-VE', {minimumFractionDigits:2}) + " Bs";
     }
+
+    window.onload = () => {
+        if (localStorage.getItem('tasaDolar')) inputTasa.value = localStorage.getItem('tasaDolar');
+    };
 </script>
 
 </body>
