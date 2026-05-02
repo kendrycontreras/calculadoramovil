@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Caja Móvil + Calc Pro</title>
+    <title>Caja Móvil</title>
     
     <meta name="theme-color" content="#1a73e8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
+    <!-- Enlaces PWA Originales -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1011/1011532.png">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
@@ -21,7 +25,6 @@
             --decimal-bg: #e8f0fe;
         }
 
-        /* Aplicación global de Outfit */
         * { 
             box-sizing: border-box; 
             font-family: 'Outfit', sans-serif;
@@ -62,6 +65,7 @@
             border-radius: 12px;
             background: white;
             outline: none;
+            -webkit-appearance: none;
         }
         input.tasa-input { background-color: #e8f0fe; color: var(--primary); font-weight: 600; border-color: #d2e3fc; }
 
@@ -81,7 +85,7 @@
             cursor: pointer;
         }
 
-        /* MODAL CALCULADORA */
+        /* MODAL CALCULADORA (Estilo iPhone Lateral) */
         #modalCalc {
             display: none;
             position: fixed;
@@ -116,7 +120,6 @@
             min-height: 90px;
             white-space: nowrap;
             overflow-x: auto;
-            overflow-y: hidden;
             display: flex;
             align-items: center;
             justify-content: flex-end;
@@ -135,9 +138,8 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: brightness 0.2s;
         }
-        .calc-btn:active { filter: brightness(1.5); }
+        .calc-btn:active { opacity: 0.6; }
 
         .btn-num { background: #333; color: white; }
         .btn-op { background: #ff9f0a; color: white; font-size: 28px; }
@@ -154,23 +156,21 @@
             margin-top: 10px;
             border: none;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        /* RESULTADOS PRINCIPALES */
+        /* RESULTADOS */
         .results-container { margin-top: 10px; border-top: 1px solid #eee; padding-top: 15px; }
         .result-row { display: flex; justify-content: space-between; padding: 10px 0; align-items: center; }
-        .result-label { color: var(--text-secondary); font-weight: 400; }
-        .result-value { font-weight: 700; font-size: 1.4em; color: var(--text); }
+        .result-value { font-weight: 700; font-size: 1.4em; }
         
         .decimal-box { background: var(--decimal-bg); padding: 20px; border-radius: 16px; text-align: center; }
-        .decimal-value { font-size: 1.8em; font-weight: 800; color: #000; margin-top: 5px; }
+        .decimal-value { font-size: 1.8em; font-weight: 800; color: #000; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="header"><h1>Calculadora Móvil</h1></div>
+    <div class="header"><h1>Caja Móvil</h1></div>
 
     <div class="input-group">
         <label>TASA DEL DÍA (Bs/$)</label>
@@ -200,17 +200,17 @@
 
     <div class="results-container">
         <div class="result-row">
-            <span class="result-label">Vuelto Total USD</span>
+            <span style="color:var(--text-secondary)">Vuelto Total USD</span>
             <span id="vueltoUSD" class="result-value">0.00 $</span>
         </div>
         <div class="result-row">
-            <span class="result-label">Vuelto Total BS</span>
+            <span style="color:var(--text-secondary)">Vuelto Total BS</span>
             <span id="vueltoBS" class="result-value">0,00 Bs</span>
         </div>
     </div>
 
     <div class="decimal-box">
-        <span style="font-size:0.85em; font-weight:600; color: #1a73e8; text-transform: uppercase;">
+        <span style="font-size:0.85em; font-weight:600; color: var(--primary); text-transform: uppercase;">
             Vuelto de <b id="labelDinamico" style="text-decoration:underline;">0.00</b>$ en Bs:
         </span>
         <div id="soloDecimalesBS" class="decimal-value">0,00 Bs</div>
@@ -252,6 +252,15 @@
 </div>
 
 <script>
+    // --- Registro de Service Worker Original ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registrado'))
+                .catch(err => console.log('Error al registrar SW', err));
+        });
+    }
+
     const inputTasa = document.getElementById('tasa');
     const inputPrecioUSD = document.getElementById('precioUSD');
     const inputPrecioBS = document.getElementById('precioBS');
@@ -261,7 +270,7 @@
 
     let currentExpression = '';
 
-    // LÓGICA CALCULADORA
+    // FUNCIONES CALCULADORA
     function openCalc() {
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('active'), 10);
@@ -276,7 +285,7 @@
 
     function updateDisplay() {
         display.innerText = currentExpression || '0';
-        display.scrollLeft = display.scrollWidth; // Desplazamiento automático a la izquierda
+        display.scrollLeft = display.scrollWidth; 
     }
 
     function appendNum(n) {
@@ -320,7 +329,7 @@
         }
     }
 
-    // LÓGICA DE NEGOCIO
+    // LÓGICA DE NEGOCIO PRINCIPAL
     inputTasa.addEventListener('input', () => {
         localStorage.setItem('tasaDolar', inputTasa.value);
         calcularTodo();
@@ -358,11 +367,13 @@
             actualizarPantalla(vUSD, vBS, decUSD, decBS);
         } else {
             document.getElementById('vueltoUSD').innerText = "Falta dinero";
+            document.getElementById('vueltoUSD').style.color = "red";
             document.getElementById('vueltoBS').innerText = "---";
         }
     }
 
     function actualizarPantalla(usd, bs, decUSD, decBs) {
+        document.getElementById('vueltoUSD').style.color = "var(--text)";
         document.getElementById('vueltoUSD').innerText = usd.toFixed(2) + " $";
         document.getElementById('vueltoBS').innerText = bs.toLocaleString('es-VE', {minimumFractionDigits:2}) + " Bs";
         document.getElementById('labelDinamico').innerText = (Math.round(decUSD * 100) / 100).toFixed(2);
