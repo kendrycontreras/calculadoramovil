@@ -33,7 +33,6 @@
             display: flex;
             justify-content: center;
             overflow-x: hidden; 
-            /* Evitar scroll elástico en iOS */
             position: fixed;
             width: 100%;
             height: 100%;
@@ -166,6 +165,84 @@
             font-weight: 800;
             text-decoration: underline;
         }
+
+        /* ESTILOS DE LA CALCULADORA */
+        #calc-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .calc-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calc-content {
+            background: #202124;
+            padding: 20px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 320px;
+        }
+
+        .calc-display {
+            background: #202124;
+            color: white;
+            font-size: 2.5em;
+            text-align: right;
+            padding: 10px;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+            min-height: 60px;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            padding: 15px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .btn-num { background: #3c4043; color: white; }
+        .btn-op { background: #f29900; color: white; }
+        .btn-util { background: #9aa0a6; color: #202124; }
+        
+        .btn-paste {
+            grid-column: span 4;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            margin-top: 10px;
+            padding: 12px;
+        }
     </style>
 </head>
 <body>
@@ -212,6 +289,42 @@
     <div class="decimal-box">
         <span class="decimal-label">Vuelto de <span id="labelDinamico">0.00</span>$ en Bolívares:</span>
         <div id="soloDecimalesBS" class="decimal-value">0,00 Bs</div>
+    </div>
+</div>
+
+<!-- BOTÓN Y MODAL DE CALCULADORA -->
+<button id="calc-toggle">＋</button>
+
+<div class="calc-modal" id="calc-modal">
+    <div class="calc-content">
+        <div class="calc-display" id="calc-display">0</div>
+        <div class="calc-grid">
+            <button class="calc-btn btn-util" onclick="clearCalc()">AC</button>
+            <button class="calc-btn btn-util" onclick="deleteLast()">DEL</button>
+            <button class="calc-btn btn-util" onclick="addChar('/')">÷</button>
+            <button class="calc-btn btn-op" onclick="addChar('*')">×</button>
+            
+            <button class="calc-btn btn-num" onclick="addChar('7')">7</button>
+            <button class="calc-btn btn-num" onclick="addChar('8')">8</button>
+            <button class="calc-btn btn-num" onclick="addChar('9')">9</button>
+            <button class="calc-btn btn-op" onclick="addChar('-')">−</button>
+            
+            <button class="calc-btn btn-num" onclick="addChar('4')">4</button>
+            <button class="calc-btn btn-num" onclick="addChar('5')">5</button>
+            <button class="calc-btn btn-num" onclick="addChar('6')">6</button>
+            <button class="calc-btn btn-op" onclick="addChar('+')">+</button>
+            
+            <button class="calc-btn btn-num" onclick="addChar('1')">1</button>
+            <button class="calc-btn btn-num" onclick="addChar('2')">2</button>
+            <button class="calc-btn btn-num" onclick="addChar('3')">3</button>
+            <button class="calc-btn btn-op" onclick="calculateResult()">=</button>
+            
+            <button class="calc-btn btn-num" style="grid-column: span 2; border-radius: 30px;" onclick="addChar('0')">0</button>
+            <button class="calc-btn btn-num" onclick="addChar('.')">.</button>
+            <button class="calc-btn btn-util" onclick="closeCalc()">✖</button>
+
+            <button class="calc-btn btn-paste" onclick="pasteResult()">PEGAR EN Bs</button>
+        </div>
     </div>
 </div>
 
@@ -308,6 +421,46 @@
         outputVueltoBS.innerText = bs.toLocaleString('es-VE', formatoBS) + " Bs";
         outputLabelDinamico.innerText = decUSD.toFixed(2);
         outputSoloDecimalesBS.innerText = decBs.toLocaleString('es-VE', formatoBS) + " Bs";
+    }
+
+    // LOGICA CALCULADORA
+    const modal = document.getElementById('calc-modal');
+    const display = document.getElementById('calc-display');
+    const btnToggle = document.getElementById('calc-toggle');
+
+    btnToggle.onclick = () => modal.style.display = 'flex';
+    
+    function closeCalc() { modal.style.display = 'none'; }
+    
+    function addChar(char) {
+        if (display.innerText === '0' && char !== '.') display.innerText = char;
+        else display.innerText += char;
+    }
+
+    function clearCalc() { display.innerText = '0'; }
+    
+    function deleteLast() {
+        if (display.innerText.length > 1) display.innerText = display.innerText.slice(0, -1);
+        else display.innerText = '0';
+    }
+
+    function calculateResult() {
+        try {
+            display.innerText = eval(display.innerText.replace('×', '*').replace('÷', '/'));
+        } catch {
+            display.innerText = "Error";
+        }
+    }
+
+    function pasteResult() {
+        calculateResult();
+        const val = parseFloat(display.innerText);
+        if (!isNaN(val)) {
+            inputPrecioBS.value = val.toFixed(2);
+            // Disparar evento para que se calcule el equivalente en USD y vueltos
+            inputPrecioBS.dispatchEvent(new Event('input'));
+            closeCalc();
+        }
     }
 </script>
 
