@@ -24,29 +24,33 @@
             --decimal-bg: #e8f0fe;
         }
 
+        * {
+            box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+        }
+
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 15px;
+            padding: 0;
             display: flex;
             justify-content: center;
-            overflow-x: hidden; 
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow: hidden; /* Elimina scroll lateral y barras extra */
+            width: 100vw;
         }
 
         .app-container {
-            width: 100%;
-            max-width: 480px;
+            width: 95%; /* Ajustado al 95% del ancho de pantalla */
+            max-width: 450px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            overflow-y: auto;
-            padding-bottom: 80px; /* Espacio para el botón flotante */
+            padding: 20px 0;
+            height: 100vh;
+            overflow-y: auto; /* Permite scroll solo si el contenido es muy largo */
         }
 
         .header {
@@ -65,6 +69,7 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            width: 100%;
         }
 
         label {
@@ -81,7 +86,6 @@
             font-size: 17px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
-            box-sizing: border-box;
             transition: border-color 0.2s;
             -webkit-appearance: none;
         }
@@ -102,6 +106,7 @@
         .row {
             display: flex;
             gap: 10px;
+            width: 100%;
         }
         .row .input-group {
             flex: 1;
@@ -111,12 +116,14 @@
             border: 0;
             border-top: 1px solid #e0e0e0;
             margin: 8px 0;
+            width: 100%;
         }
 
         .results-container {
             display: flex;
             flex-direction: column;
             gap: 4px;
+            width: 100%;
         }
 
         .result-row {
@@ -144,6 +151,7 @@
             border-radius: 16px;
             text-align: center;
             margin-top: 5px;
+            width: 100%;
         }
 
         .decimal-label {
@@ -162,16 +170,11 @@
             color: #000;
         }
 
-        #labelDinamico {
-            font-weight: 800;
-            text-decoration: underline;
-        }
-
-        /* AJUSTES DE CALCULADORA MÓVIL */
+        /* CALCULADORA */
         #calc-toggle {
             position: fixed;
             bottom: 25px;
-            right: 25px;
+            right: 20px;
             width: 56px;
             height: 56px;
             background: var(--primary);
@@ -181,7 +184,6 @@
             font-size: 28px;
             box-shadow: 0 4px 15px rgba(26, 115, 232, 0.4);
             z-index: 1000;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -205,21 +207,16 @@
             background: #171717;
             padding: 20px;
             border-radius: 28px;
-            width: 85%;
+            width: 90%;
             max-width: 320px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .calc-display {
-            background: transparent;
             color: white;
             font-size: 2.2em;
             text-align: right;
             padding: 15px 5px;
-            margin-bottom: 10px;
-            word-wrap: break-word;
             min-height: 50px;
-            font-weight: 400;
         }
 
         .calc-grid {
@@ -236,13 +233,9 @@
             font-size: 1.3em;
             border: none;
             border-radius: 50%;
-            cursor: pointer;
             font-family: 'Outfit', sans-serif;
             font-weight: 500;
-            transition: opacity 0.1s;
         }
-
-        .calc-btn:active { opacity: 0.7; }
 
         .btn-num { background: #333333; color: white; }
         .btn-op { background: #f29900; color: white; }
@@ -254,12 +247,9 @@
             border-radius: 14px;
             background: var(--primary);
             color: white;
-            margin-top: 10px;
             padding: 15px;
             font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.9em;
-            letter-spacing: 1px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -272,17 +262,17 @@
 
     <div class="input-group">
         <label for="tasa">TASA DEL DÍA (Bs/$)</label>
-        <input type="number" id="tasa" class="tasa-input" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+        <input type="number" id="tasa" class="tasa-input" inputmode="decimal" step="any" placeholder="0.00">
     </div>
 
     <div class="row">
         <div class="input-group">
             <label for="precioUSD">Consumo en $</label>
-            <input type="number" id="precioUSD" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+            <input type="number" id="precioUSD" inputmode="decimal" step="any" placeholder="0.00">
         </div>
         <div class="input-group">
             <label for="precioBS">Consumo en Bs</label>
-            <input type="number" id="precioBS" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="0.00">
+            <input type="number" id="precioBS" inputmode="decimal" step="any" placeholder="0.00">
         </div>
     </div>
 
@@ -290,7 +280,7 @@
 
     <div class="input-group">
         <label for="pagoCliente">¿CON CUÁNTO PAGA? ($)</label>
-        <input type="number" id="pagoCliente" pattern="[0-9]*" inputmode="decimal" step="any" placeholder="Ej: 10, 20, 50">
+        <input type="number" id="pagoCliente" inputmode="decimal" step="any" placeholder="Ej: 10, 20, 50">
     </div>
 
     <div class="results-container">
@@ -320,56 +310,39 @@
             <button class="calc-btn btn-util" onclick="deleteLast()">⌫</button>
             <button class="calc-btn btn-util" onclick="addChar('/')">÷</button>
             <button class="calc-btn btn-op" onclick="addChar('*')">×</button>
-            
             <button class="calc-btn btn-num" onclick="addChar('7')">7</button>
             <button class="calc-btn btn-num" onclick="addChar('8')">8</button>
             <button class="calc-btn btn-num" onclick="addChar('9')">9</button>
             <button class="calc-btn btn-op" onclick="addChar('-')">−</button>
-            
             <button class="calc-btn btn-num" onclick="addChar('4')">4</button>
             <button class="calc-btn btn-num" onclick="addChar('5')">5</button>
             <button class="calc-btn btn-num" onclick="addChar('6')">6</button>
             <button class="calc-btn btn-op" onclick="addChar('+')">+</button>
-            
             <button class="calc-btn btn-num" onclick="addChar('1')">1</button>
             <button class="calc-btn btn-num" onclick="addChar('2')">2</button>
             <button class="calc-btn btn-num" onclick="addChar('3')">3</button>
             <button class="calc-btn btn-op" onclick="calculateResult()">=</button>
-            
             <button class="calc-btn btn-num" style="grid-column: span 2; border-radius: 40px; aspect-ratio: auto;" onclick="addChar('0')">0</button>
             <button class="calc-btn btn-num" onclick="addChar('.')">.</button>
             <button class="calc-btn btn-util" onclick="closeCalc()">✖</button>
-
             <button class="calc-btn btn-paste" onclick="pasteResult()">Pegar en Bs</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Registro del Service Worker[cite: 1]
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Service Worker registrado'))
-                .catch(err => console.log('Error al registrar SW', err));
-        });
-    }
-
     const inputTasa = document.getElementById('tasa');
     const inputPrecioUSD = document.getElementById('precioUSD');
     const inputPrecioBS = document.getElementById('precioBS');
     const inputPago = document.getElementById('pagoCliente');
-    
     const outputVueltoUSD = document.getElementById('vueltoUSD');
     const outputVueltoBS = document.getElementById('vueltoBS');
     const outputLabelDinamico = document.getElementById('labelDinamico');
     const outputSoloDecimalesBS = document.getElementById('soloDecimalesBS');
 
-    window.onload = function() {
+    window.onload = () => {
         const tasaGuardada = localStorage.getItem('tasaDolar');
-        if (tasaGuardada) {
-            inputTasa.value = tasaGuardada;
-        }
+        if (tasaGuardada) inputTasa.value = tasaGuardada;
     };
 
     inputTasa.addEventListener('input', function() {
@@ -379,23 +352,15 @@
 
     inputPrecioUSD.addEventListener('input', function() {
         const tasa = parseFloat(inputTasa.value) || 0;
-        const usd = parseFloat(this.value);
-        if (usd && tasa > 0) {
-            inputPrecioBS.value = (usd * tasa).toFixed(2);
-        } else if (this.value === "") {
-            inputPrecioBS.value = "";
-        }
+        if (this.value && tasa > 0) inputPrecioBS.value = (parseFloat(this.value) * tasa).toFixed(2);
+        else if (!this.value) inputPrecioBS.value = "";
         calcularTodo();
     });
 
     inputPrecioBS.addEventListener('input', function() {
         const tasa = parseFloat(inputTasa.value) || 0;
-        const bs = parseFloat(this.value);
-        if (bs && tasa > 0) {
-            inputPrecioUSD.value = (bs / tasa).toFixed(2);
-        } else if (this.value === "") {
-            inputPrecioUSD.value = "";
-        }
+        if (this.value && tasa > 0) inputPrecioUSD.value = (parseFloat(this.value) / tasa).toFixed(2);
+        else if (!this.value) inputPrecioUSD.value = "";
         calcularTodo();
     });
 
@@ -406,7 +371,7 @@
         const precioUSD = parseFloat(inputPrecioUSD.value) || 0;
         const pagoUSD = parseFloat(inputPago.value) || 0;
 
-        if (tasa <= 0 || inputPrecioUSD.value === "" || inputPago.value === "") {
+        if (tasa <= 0 || !inputPrecioUSD.value || !inputPago.value) {
             actualizarPantalla(0, 0, 0, 0);
             return;
         }
@@ -414,64 +379,43 @@
         if (pagoUSD >= precioUSD) {
             const vueltoTotalUSD = pagoUSD - precioUSD;
             const vueltoTotalBS = vueltoTotalUSD * tasa;
-            
             const decimalesUSD = vueltoTotalUSD - Math.floor(vueltoTotalUSD);
-            const decimalesRedondeados = Math.round(decimalesUSD * 100) / 100;
-            const decimalesEnBS = decimalesRedondeados * tasa;
-
-            actualizarPantalla(vueltoTotalUSD, vueltoTotalBS, decimalesRedondeados, decimalesEnBS);
+            const decBS = Math.round(decimalesUSD * 100) / 100 * tasa;
+            actualizarPantalla(vueltoTotalUSD, vueltoTotalBS, decimalesUSD, decBS);
         } else {
             outputVueltoUSD.innerText = "Falta dinero";
             outputVueltoUSD.style.color = "red";
-            outputVueltoBS.innerText = "---";
-            outputLabelDinamico.innerText = "0.00";
-            outputSoloDecimalesBS.innerText = "0,00 Bs";
         }
     }
 
     function actualizarPantalla(usd, bs, decUSD, decBs) {
         outputVueltoUSD.style.color = "var(--text)";
         outputVueltoUSD.innerText = usd.toFixed(2) + " $";
-
-        const formatoBS = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-        
-        outputVueltoBS.innerText = bs.toLocaleString('es-VE', formatoBS) + " Bs";
+        outputVueltoBS.innerText = bs.toLocaleString('es-VE', {minimumFractionDigits: 2}) + " Bs";
         outputLabelDinamico.innerText = decUSD.toFixed(2);
-        outputSoloDecimalesBS.innerText = decBs.toLocaleString('es-VE', formatoBS) + " Bs";
+        outputSoloDecimalesBS.innerText = decBs.toLocaleString('es-VE', {minimumFractionDigits: 2}) + " Bs";
     }
 
-    // LÓGICA CALCULADORA TÁCTIL[cite: 1]
     const modal = document.getElementById('calc-modal');
     const display = document.getElementById('calc-display');
     const btnToggle = document.getElementById('calc-toggle');
 
     btnToggle.onclick = () => modal.style.display = 'flex';
-    
     function closeCalc() { modal.style.display = 'none'; }
-    
     function addChar(char) {
         if (display.innerText === '0' && char !== '.') display.innerText = char;
         else display.innerText += char;
     }
-
     function clearCalc() { display.innerText = '0'; }
-    
     function deleteLast() {
-        if (display.innerText.length > 1) display.innerText = display.innerText.slice(0, -1);
-        else display.innerText = '0';
+        display.innerText = display.innerText.length > 1 ? display.innerText.slice(0, -1) : '0';
     }
-
     function calculateResult() {
         try {
-            // Reemplazo simple para evaluar matemáticas básicas[cite: 1]
-            let expression = display.innerText.replace(/×/g, '*').replace(/÷/g, '/');
-            let result = eval(expression);
-            display.innerText = Number.isInteger(result) ? result : result.toFixed(2);
-        } catch {
-            display.innerText = "Error";
-        }
+            let res = eval(display.innerText.replace(/×/g, '*').replace(/÷/g, '/'));
+            display.innerText = Number.isInteger(res) ? res : res.toFixed(2);
+        } catch { display.innerText = "Error"; }
     }
-
     function pasteResult() {
         calculateResult();
         const val = parseFloat(display.innerText);
@@ -482,6 +426,5 @@
         }
     }
 </script>
-
 </body>
 </html>
