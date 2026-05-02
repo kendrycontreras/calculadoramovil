@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Caja Móvil</title>
     
     <meta name="theme-color" content="#1a73e8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1011/1011532.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4341/4341087.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -18,66 +18,50 @@
             --bg: #f8f9fa;
             --text: #202124;
             --text-secondary: #5f6368;
-            --card-bg: #ffffff;
             --highlight-bg: #e8f0fe;
-            --decimal-text: #000;
             --decimal-bg: #e8f0fe;
         }
 
         * {
-            box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Evita que la PWA se mueva o rebote */
+            background-color: var(--bg);
+            font-family: 'Outfit', sans-serif;
+            color: var(--text);
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            min-height: 100vh;
-            overflow: hidden; /* Elimina scroll lateral y barras extra */
-            width: 100vw;
         }
 
         .app-container {
-            width: 95%; /* Ajustado al 95% del ancho de pantalla */
+            width: 95%; /* Ajuste estricto al 95% */
             max-width: 450px;
+            height: 100%;
             display: flex;
             flex-direction: column;
             gap: 12px;
             padding: 20px 0;
-            height: 100vh;
-            overflow-y: auto; /* Permite scroll solo si el contenido es muy largo */
+            overflow-y: auto; /* Solo permite scroll interno si es necesario */
+            scrollbar-width: none;
         }
+        .app-container::-webkit-scrollbar { display: none; }
 
-        .header {
-            text-align: center;
-            padding: 5px 0;
-        }
+        .header { text-align: center; padding: 5px 0; }
+        .header h1 { margin: 0; font-weight: 800; font-size: 1.6em; color: var(--primary); }
 
-        .header h1 {
-            margin: 0;
-            font-weight: 800;
-            font-size: 1.6em;
-            color: var(--primary);
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            width: 100%;
-        }
-
-        label {
-            font-weight: 600;
-            font-size: 0.85em;
-            color: var(--text-secondary);
-            margin-left: 5px;
-        }
+        .input-group { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+        label { font-weight: 600; font-size: 0.85em; color: var(--text-secondary); margin-left: 5px; }
 
         input {
             font-family: 'Outfit', sans-serif;
@@ -86,64 +70,20 @@
             font-size: 17px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
-            transition: border-color 0.2s;
             -webkit-appearance: none;
         }
+        input:focus { outline: none; border-color: var(--primary); background-color: #fff; }
+        input.tasa-input { background-color: var(--highlight-bg); color: var(--primary); font-weight: 700; border-color: #d2e3fc; }
 
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background-color: #fff;
-        }
+        .row { display: flex; gap: 10px; width: 100%; }
+        .row .input-group { flex: 1; }
 
-        input.tasa-input {
-            background-color: var(--highlight-bg);
-            color: var(--primary);
-            font-weight: 700;
-            border-color: #d2e3fc;
-        }
+        hr { border: 0; border-top: 1px solid #e0e0e0; margin: 8px 0; width: 100%; }
 
-        .row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-        }
-        .row .input-group {
-            flex: 1;
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid #e0e0e0;
-            margin: 8px 0;
-            width: 100%;
-        }
-
-        .results-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            width: 100%;
-        }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 5px;
-        }
-
-        .result-label {
-            color: var(--text-secondary);
-            font-weight: 400;
-            font-size: 0.95em;
-        }
-
-        .result-value {
-            font-weight: 600;
-            font-size: 1.3em;
-            color: var(--text);
-        }
+        .results-container { display: flex; flex-direction: column; gap: 4px; }
+        .result-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 5px; }
+        .result-label { color: var(--text-secondary); font-size: 0.95em; }
+        .result-value { font-weight: 600; font-size: 1.3em; }
 
         .decimal-box {
             background-color: var(--decimal-bg);
@@ -151,29 +91,14 @@
             border-radius: 16px;
             text-align: center;
             margin-top: 5px;
-            width: 100%;
         }
+        .decimal-label { color: #000; font-weight: 600; font-size: 0.8em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+        .decimal-value { font-size: 1.7em; font-weight: 800; color: #000; }
 
-        .decimal-label {
-            color: var(--decimal-text);
-            font-weight: 600;
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .decimal-value {
-            font-size: 1.7em;
-            font-weight: 800;
-            color: #000;
-        }
-
-        /* CALCULADORA */
+        /* CALCULADORA PWA */
         #calc-toggle {
             position: fixed;
-            bottom: 25px;
+            bottom: 30px;
             right: 20px;
             width: 56px;
             height: 56px;
@@ -184,9 +109,6 @@
             font-size: 28px;
             box-shadow: 0 4px 15px rgba(26, 115, 232, 0.4);
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .calc-modal {
@@ -211,31 +133,9 @@
             max-width: 320px;
         }
 
-        .calc-display {
-            color: white;
-            font-size: 2.2em;
-            text-align: right;
-            padding: 15px 5px;
-            min-height: 50px;
-        }
-
-        .calc-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        .calc-btn {
-            aspect-ratio: 1/1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3em;
-            border: none;
-            border-radius: 50%;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 500;
-        }
+        .calc-display { color: white; font-size: 2.2em; text-align: right; padding: 15px 5px; min-height: 50px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .calc-btn { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 1.3em; border: none; border-radius: 50%; font-family: 'Outfit', sans-serif; font-weight: 500; }
 
         .btn-num { background: #333333; color: white; }
         .btn-op { background: #f29900; color: white; }
@@ -250,52 +150,45 @@
             padding: 15px;
             font-weight: 700;
             margin-top: 10px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="header">
-        <h1>Calculadora Móvil</h1>
-    </div>
+    <div class="header"><h1>Caja Móvil</h1></div>
 
     <div class="input-group">
-        <label for="tasa">TASA DEL DÍA (Bs/$)</label>
-        <input type="number" id="tasa" class="tasa-input" inputmode="decimal" step="any" placeholder="0.00">
+        <label>TASA DEL DÍA (Bs/$)</label>
+        <input type="number" id="tasa" class="tasa-input" inputmode="decimal" placeholder="0.00">
     </div>
 
     <div class="row">
         <div class="input-group">
-            <label for="precioUSD">Consumo en $</label>
-            <input type="number" id="precioUSD" inputmode="decimal" step="any" placeholder="0.00">
+            <label>Consumo en $</label>
+            <input type="number" id="precioUSD" inputmode="decimal" placeholder="0.00">
         </div>
         <div class="input-group">
-            <label for="precioBS">Consumo en Bs</label>
-            <input type="number" id="precioBS" inputmode="decimal" step="any" placeholder="0.00">
+            <label>Consumo en Bs</label>
+            <input type="number" id="precioBS" inputmode="decimal" placeholder="0.00">
         </div>
     </div>
 
     <hr>
 
     <div class="input-group">
-        <label for="pagoCliente">¿CON CUÁNTO PAGA? ($)</label>
-        <input type="number" id="pagoCliente" inputmode="decimal" step="any" placeholder="Ej: 10, 20, 50">
+        <label>¿CON CUÁNTO PAGA? ($)</label>
+        <input type="number" id="pagoCliente" inputmode="decimal" placeholder="Ej: 10, 20, 50">
     </div>
 
     <div class="results-container">
-        <div class="result-row">
-            <span class="result-label">Vuelto Total USD</span>
-            <span id="vueltoUSD" class="result-value">0.00 $</span>
-        </div>
-        <div class="result-row">
-            <span class="result-label">Vuelto Total BS</span>
-            <span id="vueltoBS" class="result-value">0,00 Bs</span>
-        </div>
+        <div class="result-row"><span class="result-label">Vuelto USD</span><span id="vueltoUSD" class="result-value">0.00 $</span></div>
+        <div class="result-row"><span class="result-label">Vuelto BS</span><span id="vueltoBS" class="result-value">0,00 Bs</span></div>
     </div>
 
     <div class="decimal-box">
-        <span class="decimal-label">Vuelto de <span id="labelDinamico">0.00</span>$ en Bolívares:</span>
+        <span class="decimal-label">Vuelto de <span id="labelDinamico" style="text-decoration:underline">0.00</span>$ en Bolívares:</span>
         <div id="soloDecimalesBS" class="decimal-value">0,00 Bs</div>
     </div>
 </div>
@@ -331,6 +224,12 @@
 </div>
 
 <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js');
+        });
+    }
+
     const inputTasa = document.getElementById('tasa');
     const inputPrecioUSD = document.getElementById('precioUSD');
     const inputPrecioBS = document.getElementById('precioBS');
