@@ -36,6 +36,7 @@
             position: fixed;
             width: 100%;
             height: 100%;
+            box-sizing: border-box;
         }
 
         .app-container {
@@ -43,31 +44,32 @@
             max-width: 480px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
             overflow-y: auto;
+            padding-bottom: 80px; /* Espacio para el botón flotante */
         }
 
         .header {
             text-align: center;
-            padding: 10px 0;
+            padding: 5px 0;
         }
 
         .header h1 {
             margin: 0;
             font-weight: 800;
-            font-size: 1.8em;
+            font-size: 1.6em;
             color: var(--primary);
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
         }
 
         label {
             font-weight: 600;
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: var(--text-secondary);
             margin-left: 5px;
         }
@@ -75,8 +77,8 @@
         input {
             font-family: 'Outfit', sans-serif;
             width: 100%;
-            padding: 16px;
-            font-size: 18px;
+            padding: 14px;
+            font-size: 17px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             box-sizing: border-box;
@@ -93,7 +95,7 @@
         input.tasa-input {
             background-color: var(--highlight-bg);
             color: var(--primary);
-            font-weight: 600;
+            font-weight: 700;
             border-color: #d2e3fc;
         }
 
@@ -108,55 +110,54 @@
         hr {
             border: 0;
             border-top: 1px solid #e0e0e0;
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .results-container {
-            margin-top: 5px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
         }
 
         .result-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 5px;
+            padding: 6px 5px;
         }
 
         .result-label {
             color: var(--text-secondary);
             font-weight: 400;
-            font-size: 1em;
+            font-size: 0.95em;
         }
 
         .result-value {
             font-weight: 600;
-            font-size: 1.4em;
+            font-size: 1.3em;
             color: var(--text);
         }
 
         .decimal-box {
             background-color: var(--decimal-bg);
-            padding: 20px;
+            padding: 18px;
             border-radius: 16px;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .decimal-label {
             color: var(--decimal-text);
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.8em;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .decimal-value {
-            font-size: 1.8em;
+            font-size: 1.7em;
             font-weight: 800;
             color: #000;
         }
@@ -166,21 +167,24 @@
             text-decoration: underline;
         }
 
-        /* ESTILOS DE LA CALCULADORA */
+        /* AJUSTES DE CALCULADORA MÓVIL */
         #calc-toggle {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
+            bottom: 25px;
+            right: 25px;
+            width: 56px;
+            height: 56px;
             background: var(--primary);
             color: white;
             border-radius: 50%;
             border: none;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.4);
             z-index: 1000;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .calc-modal {
@@ -190,58 +194,72 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
             z-index: 1001;
             justify-content: center;
             align-items: center;
         }
 
         .calc-content {
-            background: #202124;
+            background: #171717;
             padding: 20px;
-            border-radius: 24px;
-            width: 90%;
+            border-radius: 28px;
+            width: 85%;
             max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .calc-display {
-            background: #202124;
+            background: transparent;
             color: white;
-            font-size: 2.5em;
+            font-size: 2.2em;
             text-align: right;
-            padding: 10px;
+            padding: 15px 5px;
             margin-bottom: 10px;
             word-wrap: break-word;
-            min-height: 60px;
+            min-height: 50px;
+            font-weight: 400;
         }
 
         .calc-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
 
         .calc-btn {
-            padding: 15px;
-            font-size: 1.2em;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
             border: none;
             border-radius: 50%;
             cursor: pointer;
             font-family: 'Outfit', sans-serif;
-            font-weight: 600;
+            font-weight: 500;
+            transition: opacity 0.1s;
         }
 
-        .btn-num { background: #3c4043; color: white; }
+        .calc-btn:active { opacity: 0.7; }
+
+        .btn-num { background: #333333; color: white; }
         .btn-op { background: #f29900; color: white; }
-        .btn-util { background: #9aa0a6; color: #202124; }
+        .btn-util { background: #a5a5a5; color: black; }
         
         .btn-paste {
             grid-column: span 4;
-            border-radius: 12px;
+            aspect-ratio: auto;
+            border-radius: 14px;
             background: var(--primary);
             color: white;
             margin-top: 10px;
-            padding: 12px;
+            padding: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -292,7 +310,6 @@
     </div>
 </div>
 
-<!-- BOTÓN Y MODAL DE CALCULADORA -->
 <button id="calc-toggle">＋</button>
 
 <div class="calc-modal" id="calc-modal">
@@ -300,7 +317,7 @@
         <div class="calc-display" id="calc-display">0</div>
         <div class="calc-grid">
             <button class="calc-btn btn-util" onclick="clearCalc()">AC</button>
-            <button class="calc-btn btn-util" onclick="deleteLast()">DEL</button>
+            <button class="calc-btn btn-util" onclick="deleteLast()">⌫</button>
             <button class="calc-btn btn-util" onclick="addChar('/')">÷</button>
             <button class="calc-btn btn-op" onclick="addChar('*')">×</button>
             
@@ -319,17 +336,17 @@
             <button class="calc-btn btn-num" onclick="addChar('3')">3</button>
             <button class="calc-btn btn-op" onclick="calculateResult()">=</button>
             
-            <button class="calc-btn btn-num" style="grid-column: span 2; border-radius: 30px;" onclick="addChar('0')">0</button>
+            <button class="calc-btn btn-num" style="grid-column: span 2; border-radius: 40px; aspect-ratio: auto;" onclick="addChar('0')">0</button>
             <button class="calc-btn btn-num" onclick="addChar('.')">.</button>
             <button class="calc-btn btn-util" onclick="closeCalc()">✖</button>
 
-            <button class="calc-btn btn-paste" onclick="pasteResult()">PEGAR EN Bs</button>
+            <button class="calc-btn btn-paste" onclick="pasteResult()">Pegar en Bs</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Registro del Service Worker para PWA
+    // Registro del Service Worker[cite: 1]
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
@@ -423,7 +440,7 @@
         outputSoloDecimalesBS.innerText = decBs.toLocaleString('es-VE', formatoBS) + " Bs";
     }
 
-    // LOGICA CALCULADORA
+    // LÓGICA CALCULADORA TÁCTIL[cite: 1]
     const modal = document.getElementById('calc-modal');
     const display = document.getElementById('calc-display');
     const btnToggle = document.getElementById('calc-toggle');
@@ -446,7 +463,10 @@
 
     function calculateResult() {
         try {
-            display.innerText = eval(display.innerText.replace('×', '*').replace('÷', '/'));
+            // Reemplazo simple para evaluar matemáticas básicas[cite: 1]
+            let expression = display.innerText.replace(/×/g, '*').replace(/÷/g, '/');
+            let result = eval(expression);
+            display.innerText = Number.isInteger(result) ? result : result.toFixed(2);
         } catch {
             display.innerText = "Error";
         }
@@ -457,7 +477,6 @@
         const val = parseFloat(display.innerText);
         if (!isNaN(val)) {
             inputPrecioBS.value = val.toFixed(2);
-            // Disparar evento para que se calcule el equivalente en USD y vueltos
             inputPrecioBS.dispatchEvent(new Event('input'));
             closeCalc();
         }
